@@ -145,7 +145,9 @@ Such as, \"Teemo\" and \"zh_CN\"."
                               (format "(%c) %s\n\n%s"
                                       key
                                       .name
-                                      (ddragon--fill-string .description))))
+                                      (ddragon--fill-string
+                                       (replace-regexp-in-string
+                                        (rx "<br>") "\n" .description)))))
                           "QWER"
                           .spells))
             "\n\n")))
