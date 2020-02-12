@@ -12,16 +12,23 @@ Download and decompress the ddragon file, then point `ddragon-dir` to it, for ex
 
 ``` shell
 cd
-wget https://ddragon.leagueoflegends.com/cdn/dragontail-9.15.1.tgz
-tar xvzf dragontail-9.15.1.tgz
+wget https://ddragon.leagueoflegends.com/cdn/dragontail-10.3.1.tgz
+mkdir dragontail-10.3.1
+tar xvzf dragontail-10.3.1.tgz -C dragontail-10.3.1
 ```
 
 ``` emacs-lisp
-(setq ddragon-dir "~/dragontail-9.15.1/")
+(setq ddragon-dir "~/dragontail-10.3.1/")
 ```
 
-9.15.1 is the latest version as of today, Aug 7, 2019, you can find out the
-latest version on https://ddragon.leagueoflegends.com/api/versions.json
+10.3.1 is the latest version as of today, Feb 13, 2020, you can find out the
+latest version on https://ddragon.leagueoflegends.com/api/versions.json e.g.,
+
+``` shell
+~/s/ddragon.el $ curl -s https://ddragon.leagueoflegends.com/api/versions.json | jq -r .[0]
+10.3.1
+~/s/ddragon.el $
+```
 
 ## Usage
 

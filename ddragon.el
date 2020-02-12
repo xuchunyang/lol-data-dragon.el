@@ -51,24 +51,24 @@
 
 (defun ddragon-url ()
   "Return url to the latest version of data dragon.
-Such as the URL `https://ddragon.leagueoflegends.com/cdn/dragontail-9.15.1.tgz'."
+Such as the URL `https://ddragon.leagueoflegends.com/cdn/dragontail-10.3.1.tgz'."
   (format "https://ddragon.leagueoflegends.com/cdn/dragontail-%s.tgz"
           (car (ddragon-versions))))
 
 (defcustom ddragon-dir
   (pcase (expand-file-name
-          "dragontail-9.15.1/"
+          "dragontail-10.3.1/"
           (file-name-directory
            (or load-file-name buffer-file-name)))
     ((and (pred file-exists-p) dir) dir))
   "Directory to dragontail.
-Such as '~/src/ddragon.el/dragontail-9.15.1/'."
+Such as '~/src/ddragon.el/dragontail-10.3.1/'."
   :type '(choice (const :tag "Not set" nil)
-                 (string :tag "Directory to dragontail."))
+                 (string :tag "Directory to dragontail"))
   :group 'ddragon)
 
 (defun ddragon-dir-main ()
-  "Main directory in `ddragon-dir', such as '9.15.1'."
+  "Main directory in `ddragon-dir', such as '10.3.1'."
   (seq-find
    (lambda (x)
      (and (file-directory-p x)
