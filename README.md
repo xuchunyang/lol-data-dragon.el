@@ -48,6 +48,10 @@ Display all skins of a champion.
 
 Display all tiles of a champion.
 
+### `M-x ddragon-random-random-tiles`
+
+Display N random tiles.
+
 ## API
 
 ### `(ddragon-champions)`

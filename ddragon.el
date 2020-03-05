@@ -210,5 +210,37 @@ E.g., return 15 with Ahri_15.jpg."
     (pop-to-buffer bufname)
     (delete-other-windows)))
 
+(defun ddragon-n-random (n list)
+  "Return N random elements in LIST."
+  (cl-assert (<= n (length list)))
+  (let ((list (copy-sequence list))
+        (result ()))
+    (dotimes (_ n)
+      (let ((elt (seq-random-elt list)))
+        (push elt result)
+        (setq list (delete elt list))))
+    result))
+
+;;;###autoload
+(defun ddragon-random-random-tiles (n)
+  "Display N random tiles."
+  (interactive (list (pcase current-prefix-arg
+                       ('nil 10)
+                       (_ (read-number "N random tiles: ")))))
+  (let* ((dir (expand-file-name "img/champion/tiles/" ddragon-dir))
+         (files (ddragon-n-random n (directory-files dir 'full nil 'nosort)))
+         (bufname "*random tiles*"))
+    (with-current-buffer (get-buffer-create bufname)
+      (let ((inhibit-read-only t))
+        (erase-buffer)
+        (dolist (f files)
+          (insert-image (create-image f) f)
+          (when (>= (current-column) (window-width))
+            (insert "\n"))))
+      (goto-char (point-min))
+      (read-only-mode))
+    (pop-to-buffer bufname)
+    (delete-other-windows)))
+
 (provide 'ddragon)
 ;;; ddragon.el ends here
