@@ -29,5 +29,12 @@
 (ert-deftest ddragon-versions ()
   (should (member "9.15.1" (ddragon-versions))))
 
+(ert-deftest ddragon-file-version ()
+  (should (= (ddragon-file-version "Ahri_15.jpg") 15)))
+
+(ert-deftest ddragon-file-sort ()
+  (should (equal (ddragon-file-sort '("Ahri_1.jpg" "Ahri_14.jpg" "Ahri_2.jpg"))
+                 '("Ahri_1.jpg" "Ahri_2.jpg" "Ahri_14.jpg"))))
+
 (provide 'ddragon-tests)
 ;;; ddragon-tests.el ends here

@@ -30,9 +30,7 @@
 
 (require 'seq)
 (require 'json)
-(eval-when-compile
-  ;; For `string-join' which is an inline function
-  (require 'subr-x))
+(require 'subr-x)
 
 (defgroup ddragon nil
   "Browse Data Dragon."
@@ -120,9 +118,8 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
     (buffer-string)))
 
 ;;;###autoload
-(defun ddragon-champion-show-plain (id lang)
-  "Show infomation of a champion by ID in LANG with plain text.
-Such as, \"Teemo\" and \"zh_CN\"."
+(defun ddragon-champion-show-QWER (id lang)
+  "Show QWER of a champion by ID in LANG."
   (interactive (list (completing-read "Champion: " (ddragon-champions))
                      (completing-read "Language: " (ddragon-languages))))
   (let* ((json-file (expand-file-name (format "data/%s/champion/%s.json" lang id)
@@ -159,6 +156,38 @@ Such as, \"Teemo\" and \"zh_CN\"."
             "\n\n")))
         (goto-char (point-min)))
       (display-buffer (current-buffer)))))
+
+(defun ddragon-file-version (filename)
+  "Get version number in FILENAME.
+E.g., return 15 with Ahri_15.jpg."
+  (and (string-match (rx (+ num)) filename)
+       (string-to-number (match-string 0 filename))))
+
+(defun ddragon-file-sort-by-version (filenames)
+  "Sort filenames by version from old to new."
+  (sort filenames (lambda (f1 f2)
+                    (< (ddragon-file-version f1)
+                       (ddragon-file-version f2)))))
+
+;;;###autoload
+(defun ddragon-champion-show-skins (id)
+  "Show skins of the champion ID."
+  (interactive (list (completing-read "Champion: " (ddragon-champions))))
+  (let* ((dir (expand-file-name "img/champion/splash/" ddragon-dir))
+         (files (mapcar
+                 (lambda (f) (expand-file-name f dir))
+                 (ddragon-file-sort-by-version
+                  (directory-files dir nil (rx-to-string `(and bos ,id))))))
+         (bufname (format "*%s skins*" id)))
+    (unless (get-buffer bufname)
+      (with-current-buffer (get-buffer-create bufname)
+        (dolist (f files)
+          (insert-image (create-image f) f)
+          (insert "\n"))
+        (goto-char (point-min))
+        (read-only-mode)))
+    (pop-to-buffer bufname)
+    (delete-other-windows)))
 
 (provide 'ddragon)
 ;;; ddragon.el ends here

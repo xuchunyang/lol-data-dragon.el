@@ -34,12 +34,26 @@ latest version on https://ddragon.leagueoflegends.com/api/versions.json e.g.,
 
 ### `M-x ddragon-champion-image-dired`
 
-Show all champions with `image-dired`, ie, a gallery of LoL champions.
+Show all champions using `image-dired`.
 
-### `M-x ddragon-champion-show-plain champion-id language-code`
+### `M-x ddragon-champion-show-QWER champion-id language-code`
 
-Show information of a champion in plain text, including name, title, passive and
-four spells.
+Display abilities (passive and QWER) of a champion.
+
+### `M-x ddragon-champion-show-skins champion-id`
+
+Display all skins of a champion.
+
+## API
+
+### `(ddragon-champions)`
+
+Return a list of champions IDs.
+
+``` emacs-lisp
+(ddragon-champions)
+;; => ("Aatrox" "Ahri" "Akali" "Alistar" "Amumu" "Anivia" "Annie" "Aphelios" "Ashe" ...)
+```
 
 ## Resources
 
