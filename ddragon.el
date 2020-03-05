@@ -189,5 +189,26 @@ E.g., return 15 with Ahri_15.jpg."
     (pop-to-buffer bufname)
     (delete-other-windows)))
 
+;;;###autoload
+(defun ddragon-champion-show-tiles (id)
+  "Show tiles of the champion ID."
+  (interactive (list (completing-read "Champion: " (ddragon-champions))))
+  (let* ((dir (expand-file-name "img/champion/tiles/" ddragon-dir))
+         (files (mapcar
+                 (lambda (f) (expand-file-name f dir))
+                 (ddragon-file-sort-by-version
+                  (directory-files dir nil (rx-to-string `(and bos ,id))))))
+         (bufname (format "*%s tiles*" id)))
+    (unless (get-buffer bufname)
+      (with-current-buffer (get-buffer-create bufname)
+        (dolist (f files)
+          (insert-image (create-image f) f)
+          (when (>= (current-column) (window-width))
+            (insert "\n")))
+        (goto-char (point-min))
+        (read-only-mode)))
+    (pop-to-buffer bufname)
+    (delete-other-windows)))
+
 (provide 'ddragon)
 ;;; ddragon.el ends here

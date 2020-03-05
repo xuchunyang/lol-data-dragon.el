@@ -44,6 +44,10 @@ Display abilities (passive and QWER) of a champion.
 
 Display all skins of a champion.
 
+### `M-x ddragon-champion-show-tiles champion-id`
+
+Display all tiles of a champion.
+
 ## API
 
 ### `(ddragon-champions)`
