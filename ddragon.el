@@ -92,19 +92,25 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
   (let ((json-array-type 'list))
     (json-read-file (expand-file-name "languages.json" ddragon-dir))))
 
+(defvar ddragon-champions nil
+  "Cache, use the function `ddragon-champions' instead.")
+
 (defun ddragon-champions ()
   "Return a list of champions IDs."
-  (mapcar
-   #'symbol-name
-   (mapcar
-    #'car
-    (alist-get
-     'data
-     (json-read-file
-      (expand-file-name
-       ;; any language should work
-       "data/en_US/champion.json"
-       (ddragon-dir-main)))))))
+  (unless ddragon-champions
+    (setq ddragon-champions
+          (mapcar
+           #'symbol-name
+           (mapcar
+            #'car
+            (alist-get
+             'data
+             (json-read-file
+              (expand-file-name
+               ;; any language should work
+               "data/en_US/champion.json"
+               (ddragon-dir-main))))))))
+  ddragon-champions)
 
 (defun ddragon--fill-string (string)
   "Fill STRING."
