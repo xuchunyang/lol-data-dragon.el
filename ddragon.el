@@ -31,6 +31,7 @@
 (require 'seq)
 (require 'json)
 (require 'subr-x)
+(require 'cl-lib)
 
 (defgroup ddragon nil
   "Browse Data Dragon."
@@ -144,13 +145,13 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
                        (ddragon--fill-string
                         .passive.description))
               ,@(seq-mapn (lambda (key spell)
-                            (let-alist spell
-                              (format "(%c) %s\n\n%s"
-                                      key
-                                      .name
-                                      (ddragon--fill-string
-                                       (replace-regexp-in-string
-                                        (rx "<br>") "\n" .description)))))
+                            (format "(%c) %s\n\n%s"
+                                    key
+                                    (alist-get 'name spell)
+                                    (ddragon--fill-string
+                                     (replace-regexp-in-string
+                                      (rx "<br>") "\n"
+                                      (alist-get 'description spell)))))
                           "QWER"
                           .spells))
             "\n\n")))
@@ -216,7 +217,7 @@ E.g., return 15 with Ahri_15.jpg."
   (let ((list (copy-sequence list))
         (result ()))
     (dotimes (_ n)
-      (let ((elt (seq-random-elt list)))
+      (let ((elt (seq-elt list (random (seq-length list)))))
         (push elt result)
         (setq list (delete elt list))))
     result))
