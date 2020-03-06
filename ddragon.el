@@ -180,7 +180,7 @@ E.g., return 15 with Ahri_15.jpg."
        (string-to-number (match-string 0 filename))))
 
 (defun ddragon-file-sort-by-version (filenames)
-  "Sort filenames by version from old to new."
+  "Sort FILENAMES by version from old to new."
   (sort filenames (lambda (f1 f2)
                     (< (ddragon-file-version f1)
                        (ddragon-file-version f2)))))
@@ -273,7 +273,7 @@ LANG is the language that the skin name is in."
 The key will be the lang, the value will be the data.")
 
 (defun ddragon-champions-data (lang)
-  "Return all champions' data as a list."
+  "Return all champions' data in LANG as a list."
   (pcase (gethash lang ddragon-champions-data-table)
     ('nil
      (let ((data
