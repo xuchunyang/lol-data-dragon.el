@@ -186,20 +186,26 @@ E.g., return 15 with Ahri_15.jpg."
                        (ddragon-file-version f2)))))
 
 ;;;###autoload
-(defun ddragon-champion-show-skins (id)
-  "Show skins of the champion ID."
-  (interactive (list (completing-read "Champion: " (ddragon-champions))))
-  (let* ((dir (expand-file-name "img/champion/splash/" ddragon-dir))
-         (files (mapcar
-                 (lambda (f) (expand-file-name f dir))
-                 (ddragon-file-sort-by-version
-                  (directory-files dir nil (rx-to-string `(and bos ,id))))))
-         (bufname (format "*%s skins*" id)))
+(defun ddragon-champion-show-skins (id lang)
+  "Show skins of the champion ID.
+LANG is the language that the skin name is in."
+  (interactive (list (completing-read "Champion: " (ddragon-champions))
+                     (pcase current-prefix-arg
+                       ('nil "en_US")
+                       (_    (completing-read "Language: " (ddragon-languages))))))
+  (let ((skins (alist-get 'skins (ddragon-champion-data id lang)))
+        (getfile (lambda (num)
+                   ;; ~/src/ddragon.el/dragontail-10.3.1/img/champion/splash/Aatrox_0.jpg
+                   (concat (expand-file-name "img/champion/splash/" ddragon-dir)
+                           (format "%s_%d.jpg" id num))))
+        (bufname (format "*%s skins (%s)*" id lang)))
     (unless (get-buffer bufname)
       (with-current-buffer (get-buffer-create bufname)
-        (dolist (f files)
-          (insert-image (create-image f) f)
-          (insert "\n"))
+        (dolist (sk skins)
+          (insert (alist-get 'name sk) "\n")
+          (let ((fname (funcall getfile (alist-get 'num sk))))
+            (insert-image (create-image fname) fname))
+          (insert "\n\n"))
         (goto-char (point-min))
         (read-only-mode)))
     (pop-to-buffer bufname)
