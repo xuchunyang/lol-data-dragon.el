@@ -274,7 +274,7 @@ The key will be the lang, the value will be the data.")
 
 (defun ddragon-champions-data (lang)
   "Return all champions' data as a list."
-  (pcase (gethash lang ddragon-champion-data-table)
+  (pcase (gethash lang ddragon-champions-data-table)
     ('nil
      (let ((data
             (alist-get
@@ -285,7 +285,7 @@ The key will be the lang, the value will be the data.")
               (expand-file-name
                (format "data/%s/champion.json" lang)
                (ddragon-dir-main))))))
-       (puthash lang data ddragon-champion-data-table)
+       (puthash lang data ddragon-champions-data-table)
        data))
     (data data)))
 
