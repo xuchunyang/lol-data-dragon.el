@@ -255,5 +255,30 @@ E.g., return 15 with Ahri_15.jpg."
     (pop-to-buffer bufname)
     (delete-other-windows)))
 
+(defvar ddragon-champions-data-table
+  (make-hash-table :test #'equal
+                   ;; (length (ddragon-languages))
+                   ;; => 27
+                   :size 30)
+  "Cache for `ddragon-champions-data'.
+The key will be the lang, the value will be the data.")
+
+(defun ddragon-champions-data (lang)
+  "Return all champions' data as a list."
+  (pcase (gethash lang ddragon-champion-data-table)
+    ('nil
+     (let ((data
+            (alist-get
+             'data
+             (ddragon--json-read-file
+              ;; ~/src/ddragon.el/dragontail-10.3.1/10.3.1/data/en_US/champion.json (134K)
+              ;; ~/src/ddragon.el/dragontail-10.3.1/10.3.1/data/en_US/championFull.json (3.4M)
+              (expand-file-name
+               (format "data/%s/champion.json" lang)
+               (ddragon-dir-main))))))
+       (puthash lang data ddragon-champion-data-table)
+       data))
+    (data data)))
+
 (provide 'ddragon)
 ;;; ddragon.el ends here
