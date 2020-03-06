@@ -126,49 +126,52 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
         (json-null        nil))
     (json-read-file file)))
 
+;; XXX need cache? hash table or C-h P memoize
 (defun ddragon-champion-data (id lang)
-  (ddragon--json-read-file
-   (expand-file-name (format "data/%s/champion/%s.json" lang id)
-                     (ddragon-dir-main))))
+  (alist-get
+   (intern id)
+   (alist-get
+    'data
+    (ddragon--json-read-file
+     (expand-file-name (format "data/%s/champion/%s.json" lang id)
+                       (ddragon-dir-main))))))
 
 ;;;###autoload
 (defun ddragon-champion-show-QWER (id lang)
   "Show QWER of a champion by ID in LANG."
   (interactive (list (completing-read "Champion: " (ddragon-champions))
                      (completing-read "Language: " (ddragon-languages))))
-  (let* ((json-data (ddragon-champion-data id lang))
-         (main-data (alist-get (intern id) (alist-get 'data json-data))))
-    (with-current-buffer (get-buffer-create (format "*%s*" id))
-      (read-only-mode)
-      (let ((inhibit-read-only t))
-        (erase-buffer)
-        (let-alist main-data
-          (insert (concat .name " " .title) "\n\n")
-          (when (display-graphic-p)
-            (insert-image (create-image
-                           (expand-file-name
-                            (format "img/champion/%s.png" id)
-                            (ddragon-dir-main))))
-            (insert "\n\n"))
-          (insert
-           (string-join
-            `(,(format "(P) %s\n\n%s"
-                       .passive.name
-                       (ddragon--fill-string
-                        .passive.description))
-              ,@(seq-mapn (lambda (key spell)
-                            (format "(%c) %s\n\n%s"
-                                    key
-                                    (alist-get 'name spell)
-                                    (ddragon--fill-string
-                                     (replace-regexp-in-string
-                                      (rx "<br>") "\n"
-                                      (alist-get 'description spell)))))
-                          "QWER"
-                          .spells))
-            "\n\n")))
-        (goto-char (point-min)))
-      (display-buffer (current-buffer)))))
+  (with-current-buffer (get-buffer-create (format "*%s*" id))
+    (read-only-mode)
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (let-alist (ddragon-champion-data id lang)
+        (insert (concat .name " " .title) "\n\n")
+        (when (display-graphic-p)
+          (insert-image (create-image
+                         (expand-file-name
+                          (format "img/champion/%s.png" id)
+                          (ddragon-dir-main))))
+          (insert "\n\n"))
+        (insert
+         (string-join
+          `(,(format "(P) %s\n\n%s"
+                     .passive.name
+                     (ddragon--fill-string
+                      .passive.description))
+            ,@(seq-mapn (lambda (key spell)
+                          (format "(%c) %s\n\n%s"
+                                  key
+                                  (alist-get 'name spell)
+                                  (ddragon--fill-string
+                                   (replace-regexp-in-string
+                                    (rx "<br>") "\n"
+                                    (alist-get 'description spell)))))
+                        "QWER"
+                        .spells))
+          "\n\n")))
+      (goto-char (point-min)))
+    (display-buffer (current-buffer))))
 
 (defun ddragon-file-version (filename)
   "Get version number in FILENAME.
