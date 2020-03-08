@@ -119,6 +119,7 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
     (buffer-string)))
 
 (defun ddragon--json-read-file (file)
+  "Read first JSON object in FILE and return it."
   (let ((json-object-type 'alist)
         (json-array-type  'list)
         (json-key-type    'symbol)
@@ -128,6 +129,7 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
 
 ;; XXX need cache? hash table or C-h P memoize
 (defun ddragon-champion-data (id lang)
+  "Return champion ID's data in LANG."
   (alist-get
    (intern id)
    (alist-get
