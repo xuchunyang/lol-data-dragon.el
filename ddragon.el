@@ -211,8 +211,7 @@ LANG is the language that the skin name is in."
           (insert "\n\n"))
         (goto-char (point-min))
         (read-only-mode)))
-    (pop-to-buffer bufname)
-    (delete-other-windows)))
+    (display-buffer bufname)))
 
 ;;;###autoload
 (defun ddragon-champion-show-tiles (id)
@@ -232,8 +231,7 @@ LANG is the language that the skin name is in."
             (insert "\n")))
         (goto-char (point-min))
         (read-only-mode)))
-    (pop-to-buffer bufname)
-    (delete-other-windows)))
+    (display-buffer bufname)))
 
 (defun ddragon-n-random (n list)
   "Return N random elements in LIST."
@@ -264,8 +262,7 @@ LANG is the language that the skin name is in."
             (insert "\n"))))
       (goto-char (point-min))
       (read-only-mode))
-    (pop-to-buffer bufname)
-    (delete-other-windows)))
+    (display-buffer bufname)))
 
 (defvar ddragon-champions-data-table
   (make-hash-table :test #'equal
