@@ -33,6 +33,7 @@
 (require 'subr-x)
 (require 'cl-lib)
 (require 'org)                          ; `org-mode'
+(require 'image-dired)
 
 (defgroup ddragon nil
   "Browse Data Dragon."
@@ -76,16 +77,6 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
            (rx (1+ (and (1+ num) ".")) (1+ num))
            (file-name-nondirectory x))))
    (directory-files ddragon-dir t)))
-
-(defvar image-dired-show-all-from-dir-max-files)
-
-;;;###autoload
-(defun ddragon-champion-image-dired ()
-  "Show all champions using `image-dired'."
-  (interactive)
-  ;; There are 145 champions in League of Legends as of Aug 7, 2019
-  (let ((image-dired-show-all-from-dir-max-files 200))
-    (image-dired (expand-file-name "img/champion" (ddragon-dir-main)))))
 
 (defun ddragon-languages ()
   "Return a list of languages."
@@ -307,6 +298,67 @@ The key will be the lang, the value will be the data.")
     (org-table-insert-hline)
     (org-table-align)
     (display-buffer (current-buffer))))
+
+
+;;; Image Dired
+
+(defvar ddragon-default-language "en_US"
+  "The default language to use.")
+
+(defun ddragon-image-dired-champion-at-point ()
+  "Get champion name at point in `image-dired-thumbnail-mode'."
+  (cl-assert (derived-mode-p 'image-dired-thumbnail-mode))
+  (file-name-sans-extension
+   (file-name-nondirectory
+    (image-dired-original-file-name))))
+
+(defun ddragon-image-dired-show-QWER ()
+  "Show QWER for champion at point."
+  (interactive)
+  (ddragon-champion-show-QWER
+   (ddragon-image-dired-champion-at-point)
+   ddragon-default-language))
+
+(defun ddragon-image-dired-show-skins ()
+  "Show skins for champion at point."
+  (interactive)
+  (ddragon-champion-show-skins
+   (ddragon-image-dired-champion-at-point)
+   ddragon-default-language))
+
+(defun ddragon-image-dired-show-tiles ()
+  "Show tiles for champion at point."
+  (interactive)
+  (ddragon-champion-show-tiles
+   (ddragon-image-dired-champion-at-point)))
+
+(defvar ddragon-image-dired-thumbnail-mode-info-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "q" #'ddragon-image-dired-show-QWER)
+    (define-key map "s" #'ddragon-image-dired-show-skins)
+    (define-key map "\r" #'ddragon-image-dired-show-skins)
+    (define-key map "t" #'ddragon-image-dired-show-tiles)
+    map)
+  "Keymap for ddragon commands in `image-dired-thumbnail-mode'.")
+
+(defvar ddragon-image-dired-thumbnail-mode-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map image-dired-thumbnail-mode-map)
+    (define-key map "x" ddragon-image-dired-thumbnail-mode-info-map)
+    map)
+  "Keymap for `ddragon-image-dired-thumbnail-mode'.")
+
+(define-minor-mode ddragon-image-dired-thumbnail-mode
+  "Minor Mode to setup our own key in `image-dired-thumbnail-mode'.")
+
+;;;###autoload
+(defun ddragon-champion-image-dired ()
+  "Show all champions using `image-dired'."
+  (interactive)
+  ;; There are 145 champions in League of Legends as of Aug 7, 2019
+  (let ((image-dired-show-all-from-dir-max-files 200))
+    (image-dired (expand-file-name "img/champion" (ddragon-dir-main)))
+    (ddragon-image-dired-thumbnail-mode)))
 
 (provide 'ddragon)
 ;;; ddragon.el ends here
