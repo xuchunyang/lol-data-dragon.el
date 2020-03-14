@@ -32,6 +32,7 @@
 (require 'json)
 (require 'subr-x)
 (require 'cl-lib)
+(require 'org)                          ; `org-mode'
 
 (defgroup ddragon nil
   "Browse Data Dragon."
@@ -290,6 +291,25 @@ The key will be the lang, the value will be the data.")
        (puthash lang data ddragon-champions-data-table)
        data))
     (data data)))
+
+;;;###autoload
+(defun ddragon-list-champions-in-org-table (lang)
+  "List all champions in Org mode table using language LANG."
+  (interactive (list (completing-read "Lang: " (ddragon-languages))))
+  (with-current-buffer (get-buffer-create (format "*Champions (%s)*" lang))
+    (erase-buffer)
+    (insert "|ID|Name|Title|Tags|\n")
+    (dolist (c (ddragon-champions-data lang))
+      (let-alist c
+        (insert
+         (format "|%s|\n"
+                 (string-join (list .id .name .title (string-join .tags ", "))
+                              "|")))))
+    (org-mode)
+    (goto-char (point-min))
+    (org-table-insert-hline)
+    (org-table-align)
+    (display-buffer (current-buffer))))
 
 (provide 'ddragon)
 ;;; ddragon.el ends here
