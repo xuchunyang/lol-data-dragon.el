@@ -1,4 +1,4 @@
-# Browse [Data Dragon](https://developer.riotgames.com/ddragon.html) in Emacs
+# Browse Champions of League of Legends on [Data Dragon](https://developer.riotgames.com/ddragon.html)
 
 ![Image of champions and Teemo](Teeeemo.png)
 

@@ -1,4 +1,4 @@
-;;; ddragon.el --- Browse Data Dragon                -*- lexical-binding: t; -*-
+;;; ddragon.el --- Browse Champions of League of Legends on Data Dragon -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Xu Chunyang
 
@@ -6,6 +6,7 @@
 ;; Homepage: https://github.com/xuchunyang/ddragon.el
 ;; Package-Requires: ((emacs "25.1"))
 ;; Version: 0
+;; Keywords: games hypermedia
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -22,7 +23,7 @@
 
 ;;; Commentary:
 
-;; Browse Champions of League of Legends
+;; Browse Champions of League of Legends on Data Dragon
 
 ;; [[https://developer.riotgames.com/ddragon.html][Riot Developer Portal]]
 
@@ -36,7 +37,7 @@
 (require 'image-dired)
 
 (defgroup ddragon nil
-  "Browse Data Dragon."
+  "Browse Champions of League of Legends on Data Dragon."
   :group 'applications)
 
 (defun ddragon-versions ()
