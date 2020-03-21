@@ -52,6 +52,10 @@ Display all tiles of a champion.
 
 Display N random tiles.
 
+### `M-x lol-data-dragon-list-champions-in-org-table language-code`
+
+List all champions in Org mode table.
+
 ## API
 
 ### `(lol-data-dragon-champions)`
@@ -61,6 +65,16 @@ Return a list of champions IDs.
 ``` emacs-lisp
 (lol-data-dragon-champions)
 ;; => ("Aatrox" "Ahri" "Akali" "Alistar" "Amumu" "Anivia" "Annie" "Aphelios" "Ashe" ...)
+```
+
+### `(lol-data-dragon-champions-data LANG)`
+
+Return all champions' data in LANG as a list.
+
+``` emacs-lisp
+(let-alist (alist-get 'Teemo (lol-data-dragon-champions-data "zh_CN"))
+  .name)
+;; => "迅捷斥候"
 ```
 
 ## Resources
