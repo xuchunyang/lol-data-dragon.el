@@ -1,9 +1,9 @@
-;;; ddragon.el --- Browse Champions of League of Legends on Data Dragon -*- lexical-binding: t; -*-
+;;; lol-data-dragon.el --- Browse Champions of League of Legends on Data Dragon -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Xu Chunyang
 
 ;; Author: Xu Chunyang
-;; Homepage: https://github.com/xuchunyang/ddragon.el
+;; Homepage: https://github.com/xuchunyang/lol-data-dragon.el
 ;; Package-Requires: ((emacs "25.1"))
 ;; Version: 0
 ;; Keywords: games hypermedia
@@ -36,11 +36,11 @@
 (require 'org)                          ; `org-mode'
 (require 'image-dired)
 
-(defgroup ddragon nil
+(defgroup lol-data-dragon nil
   "Browse Champions of League of Legends on Data Dragon."
   :group 'applications)
 
-(defun ddragon-versions ()
+(defun lol-data-dragon-versions ()
   "Return a list of ddragon versions (strings), the first is the latest."
   (with-current-buffer (url-retrieve-synchronously
                         "https://ddragon.leagueoflegends.com/api/versions.json")
@@ -51,46 +51,46 @@
     (let ((json-array-type 'list))
       (json-read))))
 
-(defun ddragon-url ()
+(defun lol-data-dragon-url ()
   "Return url to the latest version of data dragon.
 Such as the URL `https://ddragon.leagueoflegends.com/cdn/dragontail-10.3.1.tgz'."
   (format "https://ddragon.leagueoflegends.com/cdn/dragontail-%s.tgz"
-          (car (ddragon-versions))))
+          (car (lol-data-dragon-versions))))
 
-(defcustom ddragon-dir
+(defcustom lol-data-dragon-dir
   (pcase (expand-file-name
           "dragontail-10.3.1/"
           (file-name-directory
            (or load-file-name buffer-file-name)))
     ((and (pred file-exists-p) dir) dir))
   "Directory to dragontail.
-Such as '~/src/ddragon.el/dragontail-10.3.1/'."
+Such as '~/src/lol-data-dragon.el/dragontail-10.3.1/'."
   :type '(choice (const :tag "Not set" nil)
                  (string :tag "Directory to dragontail"))
-  :group 'ddragon)
+  :group 'lol-data-dragon)
 
-(defun ddragon-dir-main ()
-  "Main directory in `ddragon-dir', such as '10.3.1'."
+(defun lol-data-dragon-dir-main ()
+  "Main directory in `lol-data-dragon-dir', such as '10.3.1'."
   (seq-find
    (lambda (x)
      (and (file-directory-p x)
           (string-match-p
            (rx (1+ (and (1+ num) ".")) (1+ num))
            (file-name-nondirectory x))))
-   (directory-files ddragon-dir t)))
+   (directory-files lol-data-dragon-dir t)))
 
-(defun ddragon-languages ()
+(defun lol-data-dragon-languages ()
   "Return a list of languages."
   (let ((json-array-type 'list))
-    (json-read-file (expand-file-name "languages.json" ddragon-dir))))
+    (json-read-file (expand-file-name "languages.json" lol-data-dragon-dir))))
 
-(defvar ddragon-champions nil
-  "Cache, use the function `ddragon-champions' instead.")
+(defvar lol-data-dragon-champions nil
+  "Cache, use the function `lol-data-dragon-champions' instead.")
 
-(defun ddragon-champions ()
+(defun lol-data-dragon-champions ()
   "Return a list of champions IDs."
-  (unless ddragon-champions
-    (setq ddragon-champions
+  (unless lol-data-dragon-champions
+    (setq lol-data-dragon-champions
           (mapcar
            #'symbol-name
            (mapcar
@@ -101,17 +101,17 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
               (expand-file-name
                ;; any language should work
                "data/en_US/champion.json"
-               (ddragon-dir-main))))))))
-  ddragon-champions)
+               (lol-data-dragon-dir-main))))))))
+  lol-data-dragon-champions)
 
-(defun ddragon--fill-string (string)
+(defun lol-data-dragon--fill-string (string)
   "Fill STRING."
   (with-temp-buffer
     (insert string)
     (fill-region (point-min) (point-max))
     (buffer-string)))
 
-(defun ddragon--json-read-file (file)
+(defun lol-data-dragon--json-read-file (file)
   "Read first JSON object in FILE and return it."
   (let ((json-object-type 'alist)
         (json-array-type  'list)
@@ -121,44 +121,44 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
     (json-read-file file)))
 
 ;; XXX need cache? hash table or C-h P memoize
-(defun ddragon-champion-data (id lang)
+(defun lol-data-dragon-champion-data (id lang)
   "Return champion ID's data in LANG."
   (alist-get
    (intern id)
    (alist-get
     'data
-    (ddragon--json-read-file
+    (lol-data-dragon--json-read-file
      (expand-file-name (format "data/%s/champion/%s.json" lang id)
-                       (ddragon-dir-main))))))
+                       (lol-data-dragon-dir-main))))))
 
 ;;;###autoload
-(defun ddragon-champion-show-QWER (id lang)
+(defun lol-data-dragon-champion-show-QWER (id lang)
   "Show QWER of a champion by ID in LANG."
-  (interactive (list (completing-read "Champion: " (ddragon-champions))
-                     (completing-read "Language: " (ddragon-languages))))
+  (interactive (list (completing-read "Champion: " (lol-data-dragon-champions))
+                     (completing-read "Language: " (lol-data-dragon-languages))))
   (with-current-buffer (get-buffer-create (format "*%s*" id))
     (read-only-mode)
     (let ((inhibit-read-only t))
       (erase-buffer)
-      (let-alist (ddragon-champion-data id lang)
+      (let-alist (lol-data-dragon-champion-data id lang)
         (insert (concat .name " " .title) "\n\n")
         (when (display-graphic-p)
           (insert-image (create-image
                          (expand-file-name
                           (format "img/champion/%s.png" id)
-                          (ddragon-dir-main))))
+                          (lol-data-dragon-dir-main))))
           (insert "\n\n"))
         (insert
          (string-join
           `(,(format "(P) %s\n\n%s"
                      .passive.name
-                     (ddragon--fill-string
+                     (lol-data-dragon--fill-string
                       .passive.description))
             ,@(seq-mapn (lambda (key spell)
                           (format "(%c) %s\n\n%s"
                                   key
                                   (alist-get 'name spell)
-                                  (ddragon--fill-string
+                                  (lol-data-dragon--fill-string
                                    (replace-regexp-in-string
                                     (rx "<br>") "\n"
                                     (alist-get 'description spell)))))
@@ -168,30 +168,30 @@ Such as '~/src/ddragon.el/dragontail-10.3.1/'."
       (goto-char (point-min)))
     (display-buffer (current-buffer))))
 
-(defun ddragon-file-version (filename)
+(defun lol-data-dragon-file-version (filename)
   "Get version number in FILENAME.
 E.g., return 15 with Ahri_15.jpg."
   (and (string-match (rx (+ num)) filename)
        (string-to-number (match-string 0 filename))))
 
-(defun ddragon-file-sort-by-version (filenames)
+(defun lol-data-dragon-file-sort-by-version (filenames)
   "Sort FILENAMES by version from old to new."
   (sort filenames (lambda (f1 f2)
-                    (< (ddragon-file-version f1)
-                       (ddragon-file-version f2)))))
+                    (< (lol-data-dragon-file-version f1)
+                       (lol-data-dragon-file-version f2)))))
 
 ;;;###autoload
-(defun ddragon-champion-show-skins (id lang)
+(defun lol-data-dragon-champion-show-skins (id lang)
   "Show skins of the champion ID.
 LANG is the language that the skin name is in."
-  (interactive (list (completing-read "Champion: " (ddragon-champions))
+  (interactive (list (completing-read "Champion: " (lol-data-dragon-champions))
                      (pcase current-prefix-arg
                        ('nil "en_US")
-                       (_    (completing-read "Language: " (ddragon-languages))))))
-  (let ((skins (alist-get 'skins (ddragon-champion-data id lang)))
+                       (_    (completing-read "Language: " (lol-data-dragon-languages))))))
+  (let ((skins (alist-get 'skins (lol-data-dragon-champion-data id lang)))
         (getfile (lambda (num)
-                   ;; ~/src/ddragon.el/dragontail-10.3.1/img/champion/splash/Aatrox_0.jpg
-                   (concat (expand-file-name "img/champion/splash/" ddragon-dir)
+                   ;; ~/src/lol-data-dragon.el/dragontail-10.3.1/img/champion/splash/Aatrox_0.jpg
+                   (concat (expand-file-name "img/champion/splash/" lol-data-dragon-dir)
                            (format "%s_%d.jpg" id num))))
         (bufname (format "*%s skins (%s)*" id lang)))
     (unless (get-buffer bufname)
@@ -206,13 +206,13 @@ LANG is the language that the skin name is in."
     (display-buffer bufname)))
 
 ;;;###autoload
-(defun ddragon-champion-show-tiles (id)
+(defun lol-data-dragon-champion-show-tiles (id)
   "Show tiles of the champion ID."
-  (interactive (list (completing-read "Champion: " (ddragon-champions))))
-  (let* ((dir (expand-file-name "img/champion/tiles/" ddragon-dir))
+  (interactive (list (completing-read "Champion: " (lol-data-dragon-champions))))
+  (let* ((dir (expand-file-name "img/champion/tiles/" lol-data-dragon-dir))
          (files (mapcar
                  (lambda (f) (expand-file-name f dir))
-                 (ddragon-file-sort-by-version
+                 (lol-data-dragon-file-sort-by-version
                   (directory-files dir nil (rx-to-string `(and bos ,id))))))
          (bufname (format "*%s tiles*" id)))
     (unless (get-buffer bufname)
@@ -225,7 +225,7 @@ LANG is the language that the skin name is in."
         (read-only-mode)))
     (display-buffer bufname)))
 
-(defun ddragon-n-random (n list)
+(defun lol-data-dragon-n-random (n list)
   "Return N random elements in LIST."
   (cl-assert (<= n (length list)))
   (let ((list (copy-sequence list))
@@ -237,13 +237,13 @@ LANG is the language that the skin name is in."
     result))
 
 ;;;###autoload
-(defun ddragon-random-random-tiles (n)
+(defun lol-data-dragon-random-random-tiles (n)
   "Display N random tiles."
   (interactive (list (pcase current-prefix-arg
                        ('nil 10)
                        (_ (read-number "N random tiles: ")))))
-  (let* ((dir (expand-file-name "img/champion/tiles/" ddragon-dir))
-         (files (ddragon-n-random n (directory-files dir 'full nil 'nosort)))
+  (let* ((dir (expand-file-name "img/champion/tiles/" lol-data-dragon-dir))
+         (files (lol-data-dragon-n-random n (directory-files dir 'full nil 'nosort)))
          (bufname "*random tiles*"))
     (with-current-buffer (get-buffer-create bufname)
       (let ((inhibit-read-only t))
@@ -256,39 +256,39 @@ LANG is the language that the skin name is in."
       (read-only-mode))
     (display-buffer bufname)))
 
-(defvar ddragon-champions-data-table
+(defvar lol-data-dragon-champions-data-table
   (make-hash-table :test #'equal
-                   ;; (length (ddragon-languages))
+                   ;; (length (lol-data-dragon-languages))
                    ;; => 27
                    :size 30)
-  "Cache for `ddragon-champions-data'.
+  "Cache for `lol-data-dragon-champions-data'.
 The key will be the lang, the value will be the data.")
 
-(defun ddragon-champions-data (lang)
+(defun lol-data-dragon-champions-data (lang)
   "Return all champions' data in LANG as a list."
-  (pcase (gethash lang ddragon-champions-data-table)
+  (pcase (gethash lang lol-data-dragon-champions-data-table)
     ('nil
      (let ((data
             (alist-get
              'data
-             (ddragon--json-read-file
-              ;; ~/src/ddragon.el/dragontail-10.3.1/10.3.1/data/en_US/champion.json (134K)
-              ;; ~/src/ddragon.el/dragontail-10.3.1/10.3.1/data/en_US/championFull.json (3.4M)
+             (lol-data-dragon--json-read-file
+              ;; ~/src/lol-data-dragon.el/dragontail-10.3.1/10.3.1/data/en_US/champion.json (134K)
+              ;; ~/src/lol-data-dragon.el/dragontail-10.3.1/10.3.1/data/en_US/championFull.json (3.4M)
               (expand-file-name
                (format "data/%s/champion.json" lang)
-               (ddragon-dir-main))))))
-       (puthash lang data ddragon-champions-data-table)
+               (lol-data-dragon-dir-main))))))
+       (puthash lang data lol-data-dragon-champions-data-table)
        data))
     (data data)))
 
 ;;;###autoload
-(defun ddragon-list-champions-in-org-table (lang)
+(defun lol-data-dragon-list-champions-in-org-table (lang)
   "List all champions in Org mode table using language LANG."
-  (interactive (list (completing-read "Lang: " (ddragon-languages))))
+  (interactive (list (completing-read "Lang: " (lol-data-dragon-languages))))
   (with-current-buffer (get-buffer-create (format "*Champions (%s)*" lang))
     (erase-buffer)
     (insert "|ID|Name|Title|Tags|\n")
-    (dolist (c (ddragon-champions-data lang))
+    (dolist (c (lol-data-dragon-champions-data lang))
       (let-alist c
         (insert
          (format "|%s|\n"
@@ -303,63 +303,63 @@ The key will be the lang, the value will be the data.")
 
 ;;; Image Dired
 
-(defvar ddragon-default-language "en_US"
+(defvar lol-data-dragon-default-language "en_US"
   "The default language to use.")
 
-(defun ddragon-image-dired-champion-at-point ()
+(defun lol-data-dragon-image-dired-champion-at-point ()
   "Get champion name at point in `image-dired-thumbnail-mode'."
   (cl-assert (derived-mode-p 'image-dired-thumbnail-mode))
   (file-name-sans-extension
    (file-name-nondirectory
     (image-dired-original-file-name))))
 
-(defun ddragon-image-dired-show-QWER ()
+(defun lol-data-dragon-image-dired-show-QWER ()
   "Show QWER for champion at point."
   (interactive)
-  (ddragon-champion-show-QWER
-   (ddragon-image-dired-champion-at-point)
-   ddragon-default-language))
+  (lol-data-dragon-champion-show-QWER
+   (lol-data-dragon-image-dired-champion-at-point)
+   lol-data-dragon-default-language))
 
-(defun ddragon-image-dired-show-skins ()
+(defun lol-data-dragon-image-dired-show-skins ()
   "Show skins for champion at point."
   (interactive)
-  (ddragon-champion-show-skins
-   (ddragon-image-dired-champion-at-point)
-   ddragon-default-language))
+  (lol-data-dragon-champion-show-skins
+   (lol-data-dragon-image-dired-champion-at-point)
+   lol-data-dragon-default-language))
 
-(defun ddragon-image-dired-show-tiles ()
+(defun lol-data-dragon-image-dired-show-tiles ()
   "Show tiles for champion at point."
   (interactive)
-  (ddragon-champion-show-tiles
-   (ddragon-image-dired-champion-at-point)))
+  (lol-data-dragon-champion-show-tiles
+   (lol-data-dragon-image-dired-champion-at-point)))
 
-(defvar ddragon-image-dired-thumbnail-mode-info-map
+(defvar lol-data-dragon-image-dired-thumbnail-mode-info-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "q" #'ddragon-image-dired-show-QWER)
-    (define-key map "s" #'ddragon-image-dired-show-skins)
-    (define-key map "\r" #'ddragon-image-dired-show-skins)
-    (define-key map "t" #'ddragon-image-dired-show-tiles)
+    (define-key map "q" #'lol-data-dragon-image-dired-show-QWER)
+    (define-key map "s" #'lol-data-dragon-image-dired-show-skins)
+    (define-key map "\r" #'lol-data-dragon-image-dired-show-skins)
+    (define-key map "t" #'lol-data-dragon-image-dired-show-tiles)
     map)
-  "Keymap for ddragon commands in `image-dired-thumbnail-mode'.")
+  "Keymap for lol-data-dragon commands in `image-dired-thumbnail-mode'.")
 
-(defvar ddragon-image-dired-thumbnail-mode-map
+(defvar lol-data-dragon-image-dired-thumbnail-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map image-dired-thumbnail-mode-map)
-    (define-key map "x" ddragon-image-dired-thumbnail-mode-info-map)
+    (define-key map "x" lol-data-dragon-image-dired-thumbnail-mode-info-map)
     map)
-  "Keymap for `ddragon-image-dired-thumbnail-mode'.")
+  "Keymap for `lol-data-dragon-image-dired-thumbnail-mode'.")
 
-(define-minor-mode ddragon-image-dired-thumbnail-mode
+(define-minor-mode lol-data-dragon-image-dired-thumbnail-mode
   "Minor Mode to setup our own key in `image-dired-thumbnail-mode'.")
 
 ;;;###autoload
-(defun ddragon-champion-image-dired ()
+(defun lol-data-dragon-champion-image-dired ()
   "Show all champions using `image-dired'."
   (interactive)
   ;; There are 145 champions in League of Legends as of Aug 7, 2019
   (let ((image-dired-show-all-from-dir-max-files 200))
-    (image-dired (expand-file-name "img/champion" (ddragon-dir-main)))
-    (ddragon-image-dired-thumbnail-mode)))
+    (image-dired (expand-file-name "img/champion" (lol-data-dragon-dir-main)))
+    (lol-data-dragon-image-dired-thumbnail-mode)))
 
-(provide 'ddragon)
-;;; ddragon.el ends here
+(provide 'lol-data-dragon)
+;;; lol-data-dragon.el ends here

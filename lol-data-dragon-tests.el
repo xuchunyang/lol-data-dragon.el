@@ -1,4 +1,4 @@
-;;; ddragon-tests.el --- Tests for ddragon.el        -*- lexical-binding: t; -*-
+;;; lol-data-dragon-tests.el --- Tests for lol-data-dragon.el        -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2019  Xu Chunyang
 
@@ -19,18 +19,18 @@
 
 ;;; Commentary:
 
-;;
+;; Tests for lol-data-dragon.el
 
 ;;; Code:
 
 (require 'ert)
-(require 'ddragon)
+(require 'lol-data-dragon)
 
-(ert-deftest ddragon-versions ()
-  (should (member "9.15.1" (ddragon-versions))))
+(ert-deftest lol-data-dragon-versions ()
+  (should (member "9.15.1" (lol-data-dragon-versions))))
 
-(ert-deftest ddragon-file-version ()
-  (should (= (ddragon-file-version "Ahri_15.jpg") 15)))
+(ert-deftest lol-data-dragon-file-version ()
+  (should (= (lol-data-dragon-file-version "Ahri_15.jpg") 15)))
 
-(provide 'ddragon-tests)
-;;; ddragon-tests.el ends here
+(provide 'lol-data-dragon-tests)
+;;; lol-data-dragon-tests.el ends here
