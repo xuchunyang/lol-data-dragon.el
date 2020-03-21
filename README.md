@@ -8,7 +8,7 @@
 
 ## Setup
 
-Download and decompress the ddragon file, then point `ddragon-dir` to it, for example,
+Download and decompress the ddragon file, then point `lol-data-dragon-dir` to it, for example,
 
 ``` shell
 cd
@@ -18,48 +18,48 @@ tar xvzf dragontail-10.3.1.tgz -C dragontail-10.3.1
 ```
 
 ``` emacs-lisp
-(setq ddragon-dir "~/dragontail-10.3.1/")
+(setq lol-data-dragon-dir "~/dragontail-10.3.1/")
 ```
 
 10.3.1 is the latest version as of today, Feb 13, 2020, you can find out the
 latest version on https://ddragon.leagueoflegends.com/api/versions.json e.g.,
 
 ``` shell
-~/s/ddragon.el $ curl -s https://ddragon.leagueoflegends.com/api/versions.json | jq -r .[0]
+~/s/lol-data-dragon.el $ curl -s https://ddragon.leagueoflegends.com/api/versions.json | jq -r .[0]
 10.3.1
-~/s/ddragon.el $
+~/s/lol-data-dragon.el $
 ```
 
 ## Usage
 
-### `M-x ddragon-champion-image-dired`
+### `M-x lol-data-dragon-champion-image-dired`
 
 Show all champions using `image-dired`.
 
-### `M-x ddragon-champion-show-QWER champion-id language-code`
+### `M-x lol-data-dragon-champion-show-QWER champion-id language-code`
 
 Display abilities (passive and QWER) of a champion.
 
-### `M-x ddragon-champion-show-skins champion-id`
+### `M-x lol-data-dragon-champion-show-skins champion-id`
 
 Display all skins of a champion.
 
-### `M-x ddragon-champion-show-tiles champion-id`
+### `M-x lol-data-dragon-champion-show-tiles champion-id`
 
 Display all tiles of a champion.
 
-### `M-x ddragon-random-random-tiles`
+### `M-x lol-data-dragon-random-random-tiles`
 
 Display N random tiles.
 
 ## API
 
-### `(ddragon-champions)`
+### `(lol-data-dragon-champions)`
 
 Return a list of champions IDs.
 
 ``` emacs-lisp
-(ddragon-champions)
+(lol-data-dragon-champions)
 ;; => ("Aatrox" "Ahri" "Akali" "Alistar" "Amumu" "Anivia" "Annie" "Aphelios" "Ashe" ...)
 ```
 
