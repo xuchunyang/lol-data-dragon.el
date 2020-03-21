@@ -347,7 +347,7 @@ The key will be the lang, the value will be the data.")
     (set-keymap-parent map image-dired-thumbnail-mode-map)
     (define-key map "x" lol-data-dragon-image-dired-thumbnail-mode-info-map)
     map)
-  "Keymap for `lol-data-dragon-image-dired-thumbnail-mode'.")
+  "Keymap for command `lol-data-dragon-image-dired-thumbnail-mode'.")
 
 (define-minor-mode lol-data-dragon-image-dired-thumbnail-mode
   "Minor Mode to setup our own key in `image-dired-thumbnail-mode'.")
