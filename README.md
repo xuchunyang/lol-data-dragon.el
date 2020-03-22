@@ -1,4 +1,5 @@
 # Browse Champions of League of Legends on [Data Dragon](https://developer.riotgames.com/ddragon.html)
+[![Melpa](https://melpa.org/packages/lol-data-dragon-badge.svg)](https://melpa.org/#/lol-data-dragon)
 
 ![Image of champions and Teemo](Teeeemo.png)
 
