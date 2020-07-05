@@ -69,6 +69,13 @@ Such as '~/src/lol-data-dragon.el/dragontail-10.3.1/'."
                  (string :tag "Directory to dragontail"))
   :group 'lol-data-dragon)
 
+(defun lol-data-dragon-dir ()
+  "Return the value of the variable `lol-data-dragon-dir' if non-nil."
+  (if lol-data-dragon-dir
+      lol-data-dragon-dir
+    (user-error
+     "You need to download dragontail and set variable `lol-data-dragon-dir'")))
+
 (defun lol-data-dragon-dir-main ()
   "Main directory in `lol-data-dragon-dir', such as '10.3.1'."
   (seq-find
@@ -77,12 +84,12 @@ Such as '~/src/lol-data-dragon.el/dragontail-10.3.1/'."
           (string-match-p
            (rx (1+ (and (1+ num) ".")) (1+ num))
            (file-name-nondirectory x))))
-   (directory-files lol-data-dragon-dir t)))
+   (directory-files (lol-data-dragon-dir) t)))
 
 (defun lol-data-dragon-languages ()
   "Return a list of languages."
   (let ((json-array-type 'list))
-    (json-read-file (expand-file-name "languages.json" lol-data-dragon-dir))))
+    (json-read-file (expand-file-name "languages.json" (lol-data-dragon-dir)))))
 
 (defvar lol-data-dragon-champions nil
   "Cache, use the function `lol-data-dragon-champions' instead.")
@@ -191,7 +198,7 @@ LANG is the language that the skin name is in."
   (let ((skins (alist-get 'skins (lol-data-dragon-champion-data id lang)))
         (getfile (lambda (num)
                    ;; ~/src/lol-data-dragon.el/dragontail-10.3.1/img/champion/splash/Aatrox_0.jpg
-                   (concat (expand-file-name "img/champion/splash/" lol-data-dragon-dir)
+                   (concat (expand-file-name "img/champion/splash/" (lol-data-dragon-dir))
                            (format "%s_%d.jpg" id num))))
         (bufname (format "*%s skins (%s)*" id lang)))
     (unless (get-buffer bufname)
@@ -209,7 +216,7 @@ LANG is the language that the skin name is in."
 (defun lol-data-dragon-champion-show-tiles (id)
   "Show tiles of the champion ID."
   (interactive (list (completing-read "Champion: " (lol-data-dragon-champions))))
-  (let* ((dir (expand-file-name "img/champion/tiles/" lol-data-dragon-dir))
+  (let* ((dir (expand-file-name "img/champion/tiles/" (lol-data-dragon-dir)))
          (files (mapcar
                  (lambda (f) (expand-file-name f dir))
                  (lol-data-dragon-file-sort-by-version
@@ -242,7 +249,7 @@ LANG is the language that the skin name is in."
   (interactive (list (pcase current-prefix-arg
                        ('nil 10)
                        (_ (read-number "N random tiles: ")))))
-  (let* ((dir (expand-file-name "img/champion/tiles/" lol-data-dragon-dir))
+  (let* ((dir (expand-file-name "img/champion/tiles/" (lol-data-dragon-dir)))
          (files (lol-data-dragon-n-random n (directory-files dir 'full nil 'nosort)))
          (bufname "*random tiles*"))
     (with-current-buffer (get-buffer-create bufname)
