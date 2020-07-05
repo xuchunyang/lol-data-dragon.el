@@ -152,7 +152,7 @@ Such as '~/src/lol-data-dragon.el/dragontail-10.3.1/'."
   "Show QWER of a champion by ID in LANG."
   (interactive (list (completing-read "Champion: " (lol-data-dragon-champions))
                      (completing-read "Language: " (lol-data-dragon-languages))))
-  (with-current-buffer (get-buffer-create (format "*%s*" id))
+  (with-current-buffer (get-buffer-create (format "*%s %s*" id lang))
     (read-only-mode)
     (let ((inhibit-read-only t))
       (erase-buffer)
