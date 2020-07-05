@@ -138,7 +138,8 @@ Such as '~/src/lol-data-dragon.el/dragontail-10.3.1/'."
 
 ;; XXX need cache? hash table or C-h P memoize
 (defun lol-data-dragon-champion-data (id lang)
-  "Return champion ID's data in LANG."
+  "Return champion ID's data in LANG.
+Both ID and LANG are strings, such as \"Ekko\" and \"zh_CN\"."
   (alist-get
    (intern id)
    (alist-get
