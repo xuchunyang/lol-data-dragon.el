@@ -57,12 +57,21 @@ Such as the URL `https://ddragon.leagueoflegends.com/cdn/dragontail-10.3.1.tgz'.
   (format "https://ddragon.leagueoflegends.com/cdn/dragontail-%s.tgz"
           (car (lol-data-dragon-versions))))
 
-(defcustom lol-data-dragon-dir
-  (pcase (expand-file-name
-          "dragontail-10.3.1/"
-          (file-name-directory
-           (or load-file-name buffer-file-name)))
-    ((and (pred file-exists-p) dir) dir))
+(defun lol-data-dragon-dir-guess ()
+  "Guess the location of ddragon directory.
+Return nil if none found."
+  (let ((guesses
+         ;; Sort by version, the first is newest
+         (sort
+          (file-expand-wildcards
+           (expand-file-name
+            "dragontail-*"
+            (file-name-directory
+             (or load-file-name buffer-file-name))))
+          #'string>)))
+    (seq-find #'file-directory-p guesses)))
+
+(defcustom lol-data-dragon-dir (lol-data-dragon-dir-guess)
   "Directory to dragontail.
 Such as '~/src/lol-data-dragon.el/dragontail-10.3.1/'."
   :type '(choice (const :tag "Not set" nil)
